@@ -6,6 +6,7 @@ import { Router } from 'express';
 const reservationsRouter = Router();
 
 reservationsRouter.post('/', validateBody(createReservationSchema), saveTicket);
+// reservationsRouter.post('/', saveTicket);
 reservationsRouter.post('/:cardId/:ticketId', saveReservation);
 
 export { reservationsRouter };

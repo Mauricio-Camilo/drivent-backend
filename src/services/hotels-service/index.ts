@@ -24,6 +24,24 @@ async function getSelectedHotelRooms(hotelRecebido: string) {
   return selectedhotel;
 }
 
+async function getRegisteredHotel(hotel: string, room: number) {
+  const hotelId = await hotelsRepository.getHotelIdByName(hotel);
+  const selectedRoom  = await hotelsRepository.getRoomId(hotelId, room);
+  const { id, type } = selectedRoom[0];
+  const usersQuantity = await hotelsRepository.getRoomUsers(id);
+  const message = roomQuantityMessage(usersQuantity);
+  return {hotel, room, type, message};
+}
+
+function roomQuantityMessage(usersQuantity: number) {
+  if (usersQuantity === 0) {
+    return 'Apenas você'
+  }
+  else {
+    return `Você e mais ${usersQuantity}`
+  }
+}
+
 async function updateRoomVacancy(userId: number, vacancyId: number, updateStatus: boolean, removeId: number) {
   if (updateStatus) {
     await hotelsRepository.removeReservationIdAndUpdate(userId, vacancyId, removeId);
@@ -51,6 +69,7 @@ async function getVacanciesPerRoom(vacancyId: number) {
 const hotelsService = {
   getAllHotels,
   getSelectedHotelRooms,
+  getRegisteredHotel,
   updateRoomVacancy,
   getVacanciesPerRoom,
 };

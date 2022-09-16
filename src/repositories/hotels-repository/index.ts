@@ -5,6 +5,29 @@ async function getAllHotels() {
   return await prisma.hotel.findMany();
 }
 
+async function getHotelIdByName(hotel: string) {
+  const response = await prisma.hotel.findFirst({
+    where: { name: hotel },
+  })
+  return response.id;
+}
+
+async function getRoomId(hotelId: number, room: number){
+  const response: any = await prisma.$queryRaw`
+  SELECT * FROM rooms as r
+  WHERE "number" = ${room} AND "hotelId" = ${hotelId}
+  `;
+  return response;
+}
+
+async function getRoomUsers(roomId: number){
+  const usersQuantity : any = await prisma.$queryRaw`
+  SELECT COUNT (v."roomId") FROM vacancies AS v
+  WHERE "roomId" = ${roomId} and v."userId" IS NOT NULL;
+  `;
+  return usersQuantity[0].count;
+}
+
 async function getHotelVacancies(id: number) {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const vagas: any = await prisma.$queryRaw`SELECT COUNT(h.id)
@@ -74,6 +97,9 @@ async function getHotelReservation(userId: number) {
 
 const hotelsRepository = {
   getAllHotels,
+  getHotelIdByName,
+  getRoomId,  
+  getRoomUsers,
   getHotelVacancies,
   getSelectedHotelRooms,
   fillRoomVacancy,

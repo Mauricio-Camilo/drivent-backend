@@ -15,6 +15,12 @@ export async function getSelectedHotelRooms(req: Request, res: Response) {
   res.status(httpStatus.OK).send(response[0].Rooms);
 }
 
+export async function getReservedHotel (req: Request, res: Response) {
+  const { hotel, room } = req.params;
+  const response = await hotelsService.getRegisteredHotel(hotel, parseInt(room));
+  res.status(httpStatus.OK).send(response);
+}
+
 export async function updateRoomVacancy(req: Request, res: Response) {
   const { userId, vacancyId } = req.params;
   const { updateRoom, removeId } = req.body;
