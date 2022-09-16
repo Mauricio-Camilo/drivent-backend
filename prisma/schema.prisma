@@ -20,7 +20,7 @@ model User {
   Session    Session[]
   Enrollment Enrollment[]
   Card       Card[]
-  Reservation Reservation[]
+  Ticket      Ticket[]
 }
 
 model Session {
@@ -83,15 +83,24 @@ model Card {
   @@map("cards")
 }
 
-model Reservation {
+model Ticket {
   id            Int        @id @default(autoincrement())
   ticket        String
   accommodation String
+  price         Int
   userId        Int
+  users         User      @relation(fields: [userId], references: [id])
+  Reservation   Reservation[]
+  @@map("tickets")
+}
+
+model Reservation {
+  id            Int        @id @default(autoincrement())
+  ticketId      Int
   cardId        Int
   createdAt     DateTime   @default(now())
-  users         User      @relation(fields: [userId], references: [id])
   cards         Card      @relation(fields: [cardId], references: [id])
+  tickets       Ticket    @relation(fields: [ticketId], references: [id])
   @@map("reservations")
 }
 

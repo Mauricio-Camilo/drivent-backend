@@ -1,26 +1,28 @@
 import { prisma } from './../../config';
-import { CreateReservationData } from './../../services/reservations-service';
+import { CreateTicketData } from './../../services/reservations-service';
 
-async function saveReservation(data: CreateReservationData) {
-  await prisma.reservation.create({
+async function saveTicket(data: CreateTicketData) {
+  const reservation = await prisma.ticket.create({
     data,
   });
+  return reservation;
 }
 
-async function getReservationDataInDb(userId: number) {
-  return await prisma.$queryRaw`
-    SELECT "Session"."userId", reservations.ticket, reservations.accommodation, reservations."cardId"
-    FROM "Session"
-    JOIN reservations ON
-    "Session"."userId" = reservations."userId"
-    WHERE "Session"."userId" = ${userId}
-    LIMIT 1
-  `;
+async function findTicketById(id: number) {
+  const checkCard = await prisma.ticket.findFirst({ where: { id } });
+  return checkCard;
+}
+
+async function saveReservation(data: any) {
+  await prisma.reservation.create({
+    data,
+  })
 }
 
 const reservationsRepository = {
+  saveTicket,
+  findTicketById,
   saveReservation,
-  getReservationDataInDb,
 };
 
 export default reservationsRepository;
